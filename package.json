@@ -1,6 +1,6 @@
 {
   "name": "lp-prices",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Calculates UniswapV2Pair token price from attendant token price",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
