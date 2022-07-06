@@ -1,0 +1,30 @@
+{
+  "name": "lp-prices",
+  "version": "1.0.0",
+  "description": "Calculates UniswapV2Pair token price from attendant token price",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "ts-mocha test/**/*.ts --timeout 20000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bignumber.js": "^9.0.2",
+    "eth-multicall": "^1.4.0",
+    "web3": "^1.7.4"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.8.2"
+  }
+}
