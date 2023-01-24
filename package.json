@@ -1,6 +1,6 @@
 {
   "name": "lp-prices",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Calculates UniswapV2Pair, PancakeStableSwapLP token price from attendant token price",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,15 @@
     "build": "tsc -p .",
     "test": "ts-mocha test/**/*.ts --timeout 20000"
   },
-  "keywords": ["web3", "liquidity pair", "price", "calculation", "token", "UniswapV2Pair", "PancakeStableSwapLP"],
+  "keywords": [
+    "web3",
+    "liquidity pair",
+    "price",
+    "calculation",
+    "token",
+    "UniswapV2Pair",
+    "PancakeStableSwapLP"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
