@@ -11,7 +11,7 @@
     "build": "tsc -p .",
     "test": "ts-mocha test/**/*.ts --timeout 20000"
   },
-  "keywords": [],
+  "keywords": ["web3", "liquidity pair", "price", "calculation", "token", "UniswapV2Pair", "PancakeStableSwapLP"],
   "author": "",
   "license": "MIT",
   "dependencies": {
