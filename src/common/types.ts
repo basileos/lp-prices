@@ -11,6 +11,7 @@ export type TokenWithBalance = Token & {
 }
 
 export type LiquidityPair = Token & {
+    totalSupply: never;
     token0: Token;
     token1: Token;
 }
@@ -32,8 +33,16 @@ export type CalcPricesByAddressesInput =  Omit<CalcPricesInput, "liquidityPairs"
     liquidityPairAddresses: string[];
 }
 
+export type CalcPricesByPancakeStableLPsInput =  Omit<CalcPricesInput, "liquidityPairs"> & {
+    liquidityPairAddresses: { stableSwapRouterAddress: string; LPAddress: string }[];
+}
+
 export interface GetTokensInput {
     RPC_URL: string,
     MULTICALL_CONTRACT_ADDRESS: string,
     liquidityPairAddresses: string[];
+}
+
+export type GetPancakeStableTokensInput = Omit<GetTokensInput, "liquidityPairAddresses"> & {
+    liquidityPairAddresses: { stableSwapRouterAddress: string; LPAddress: string }[];
 }

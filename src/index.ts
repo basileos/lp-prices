@@ -1,1 +1,1 @@
-export { calculatePrices, calculatePricesByLPAddresses } from "./services/prices";
+export { calculatePrices, calculatePricesByLPAddresses, calculatePricesByPancakeStableLPAddresses } from "./services/prices";
