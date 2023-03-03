@@ -10,7 +10,7 @@ import BigNumber from 'bignumber.js';
 import Web3 from 'web3';
 import EventEmitter from 'events';
 import {AbiItem} from "web3-utils";
-import {getLiquidityPairByAddress, getPancakeStableLiquidityPairByAddress} from "./token";
+import {getLiquidityPairByAddress, getPancakeStableLiquidityPairPrices} from "./token";
 import {getMultiCall} from "./multicall";
 import PairABI from "../abis/Pair.json";
 const eventEmitter = new EventEmitter();
@@ -197,13 +197,11 @@ export const calculatePricesByLPAddresses = async (params: CalcPricesByAddresses
 }
 
 export const calculatePricesByPancakeStableLPAddresses = async (params: CalcPricesByPancakeStableLPsInput): Promise<{[key: string]: number}> => {
-  return calculatePrices({
-    ...params,
-    liquidityPairs: (await getPancakeStableLiquidityPairByAddress({
+  return getPancakeStableLiquidityPairPrices({
       RPC_URL: params.RPC_URL,
       MULTICALL_CONTRACT_ADDRESS: params.MULTICALL_CONTRACT_ADDRESS,
       liquidityPairAddresses: params.liquidityPairAddresses,
-    })),
-  });
+    }
+  );
 }
 

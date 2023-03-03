@@ -89,7 +89,7 @@ export const getLiquidityPairByAddress = async (params: GetTokensInput): Promise
     });
 }
 
-export const getPancakeStableLiquidityPairByAddress = async (params: GetPancakeStableTokensInput): Promise<LiquidityPairWithBalance[]> => {
+export const getPancakeStableLiquidityPairPrices = async (params: GetPancakeStableTokensInput): Promise<{[key: string]: number}> => {
     const { RPC_URL, MULTICALL_CONTRACT_ADDRESS, liquidityPairAddresses } = params;
     const multiCall = getMultiCall(RPC_URL, MULTICALL_CONTRACT_ADDRESS);
     const lpCalls: any[] = [];
@@ -106,33 +106,28 @@ export const getPancakeStableLiquidityPairByAddress = async (params: GetPancakeS
         lpCalls.push(
             ...[
                 {[liquidityPair.LPAddress]: contract.methods.decimals()},
-                {[liquidityPair.LPAddress]: contract.methods.totalSupply()},
+                {[liquidityPair.LPAddress]: stableSwapRouter.methods.get_virtual_price()},
                 {[liquidityPair.LPAddress]: stableSwapRouter.methods.coins(0)},
                 {[liquidityPair.LPAddress]: stableSwapRouter.methods.coins(1)},
-                {[liquidityPair.LPAddress]: stableSwapRouter.methods.balances(0)},
-                {[liquidityPair.LPAddress]: stableSwapRouter.methods.balances(1)},
             ]
         )
     }
     const results = (await multiCall.all([lpCalls]))[0];
     const lps = [];
-    for (let i = 0; i < results.length; i += 6) {
+    for (let i = 0; i < results.length; i += 4) {
         const lpAddress = Object.keys(results[i])[0];
         lps.push({
             address: lpAddress,
             decimals: `1e${results[i][lpAddress]}`,
-            totalSupply: new BigNumber(results[i + 1][lpAddress]),
+            price: new BigNumber(results[i + 1][lpAddress]),
             token0: {
                 address: results[i + 2][lpAddress],
-                balance: new BigNumber(results[i + 4][lpAddress])
             },
             token1: {
                 address: results[i + 3][lpAddress],
-                balance: new BigNumber(results[i + 5][lpAddress])
             }
         })
     }
-    const tokensByLps: {[key: string]: {[key: string]: { balance: BigNumber, index: number}}} = {};
     const tokenCalls: any[] = [];
     for (let i = 0; i < lps.length; i++){
         const lp = lps[i];
@@ -146,40 +141,18 @@ export const getPancakeStableLiquidityPairByAddress = async (params: GetPancakeS
         );
         tokenCalls.push(
             ...[
-                {[lp.token0.address]: tokenZeroContract.methods.decimals()},
                 {[lp.token0.address]: tokenZeroContract.methods.symbol()},
-            ]
-        );
-        tokenCalls.push(
-            ...[
-                {[lp.token1.address]: tokenOneContract.methods.decimals()},
                 {[lp.token1.address]: tokenOneContract.methods.symbol()},
             ]
         );
-        tokensByLps[lp.address] = {
-            [lp.token0.address]: { balance: lp.token0.balance, index: i * 2},
-            [lp.token1.address]: { balance: lp.token1.balance, index: i * 2 + 1}
-        }
     }
     const tokenResults = (await multiCall.all([tokenCalls]))[0];
-    const tokens: Token[] = [];
-    for (let i = 0; i < tokenResults.length; i += 2) {
-        const tokenAddress = Object.keys(tokenResults[i])[0];
-        tokens.push({
-            address: tokenAddress,
-            decimals: `1e${tokenResults[i][tokenAddress]}`,
-            id: tokenResults[i + 1][tokenAddress],
-        });
-    }
-    return lps.map((lp) => {
-        const token0 = {...tokens[tokensByLps[lp.address][lp.token0.address].index], balance: tokensByLps[lp.address][lp.token0.address].balance};
-        const token1 = {...tokens[tokensByLps[lp.address][lp.token1.address].index], balance: tokensByLps[lp.address][lp.token1.address].balance};
+    return lps.reduce((previousValue, currentValue) => {
+        const token0 = tokenResults.find((item) => Object.keys(item)[0] === currentValue.token0.address);
+        const token1 = tokenResults.find((item) => Object.keys(item)[0] === currentValue.token1.address);
         return {
-            id: `${token0.id}-${token1.id}`,
-            ...lp,
-            token0,
-            token1
-
-        } as LiquidityPairWithBalance
-    });
+            ...previousValue,
+            [`${token0[currentValue.token0.address]}-${token1[currentValue.token1.address]}`]: currentValue.price.dividedBy(currentValue.decimals).toNumber()
+        }
+    }, {});
 }

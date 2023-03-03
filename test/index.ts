@@ -69,5 +69,6 @@ describe("calculatePricesByLPAddresses", async () => {
            ]
        });
        expect(prices).to.be.an("object");
+       expect(prices).to.have.all.keys("USDT-BUSD", "USDT-USDC");
    });
 });
